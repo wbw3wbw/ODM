@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+		
+<!--配置job类-->
+	<bean id="dutyJob" class="logic.DutyJob"></bean>
+<!--配置jobDetail-->
+	<bean id="SpringQtzJobMethod0" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject"><ref bean="dutyJob"></ref></property>
+		<property name="targetMethod"><value>job0</value></property>
+	</bean>
+	<bean id="SpringQtzJobMethod1" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject"><ref bean="dutyJob"></ref></property>
+		<property name="targetMethod"><value>job1</value></property>
+	</bean>
+	<bean id="SpringQtzJobMethod2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject"><ref bean="dutyJob"></ref></property>
+		<property name="targetMethod"><value>job2</value></property>
+	</bean>
+	<bean id="SpringQtzJobMethod3" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject"><ref bean="dutyJob"></ref></property>
+		<property name="targetMethod"><value>job3</value></property>
+	</bean>
+<!--配置一个trigger-->
+	<bean id="cronTriggerFactoryBean0" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="SpringQtzJobMethod0"></property>
+		<property name="cronExpression" value="0 20 8 * * ? *"></property><!--每天8点20执行-->
+	</bean>
+	<bean id="cronTriggerFactoryBean1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="SpringQtzJobMethod1"></property>
+		<property name="cronExpression" value="0 20 7 * * ? *"></property><!--每天7点20执行-->
+	</bean>
+	<bean id="cronTriggerFactoryBean2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="SpringQtzJobMethod2"></property>
+		<property name="cronExpression" value="0 0 11 * * ? *"></property><!--每天11点执行-->
+	</bean>
+	<bean id="cronTriggerFactoryBean3" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="SpringQtzJobMethod3"></property>
+		<property name="cronExpression" value="0 0 17 * * ? *"></property><!--每天17点执行-->
+	</bean>
+<!--配置调度框架-->
+	<bean id="SpringJobSchedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="cronTriggerFactoryBean0"/>
+				<ref bean="cronTriggerFactoryBean1"/>
+				<ref bean="cronTriggerFactoryBean2"/>
+				<ref bean="cronTriggerFactoryBean3"/>
+			</list>
+		</property>
+	</bean>
+</beans>

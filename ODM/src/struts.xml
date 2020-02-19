@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<constant name="struts.action.excludePattern" value="/dwr.*"></constant>
+	<!-- 控制上传文件允许的最大值，设置为100M-->
+	<constant name="struts.multipart.maxSize" value="104857600"/>
+	<package name="abstract_struts" abstract="true" extends="struts-default,json-default" namespace="/">
+		<interceptors>
+			<interceptor-stack name="myStack">
+				<interceptor-ref name="json"></interceptor-ref>
+				<interceptor-ref name="defaultStack" /> 
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="myStack" />
+	</package>
+	
+	<!-- 通用方法，不使用过滤器 -->
+	<package name="normal" extends="abstract_struts">
+       <action name="ajaxLogin" class="LoginAction" method="login">
+           <result type="json"><param name="root">message</param></result>
+       </action> 
+	</package>
+	
+	<!-- 用户action -->
+	<package name="admin" namespace="/admin" extends="abstract_struts">
+        <result-types>
+        	 <!-- 此配置用于解决struts2自带的文件下载功能，在取消下载时会报错的问题 -->
+             <result-type name="streamx" class="cc.fozone.struts2.StreamResultX"/>
+        </result-types>
+	   	<interceptors>
+			<interceptor name="checkAdminLogin" class="logic.BgInterceptor"/>
+			<interceptor-stack name="adminDefault">
+				<interceptor-ref name="defaultStack" /> 
+				<interceptor-ref name="checkAdminLogin"/>  
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="adminDefault" />
+		<global-results>
+			<result name="login">/logout.jsp</result>
+		</global-results>
+        <action name="showSysMenu" class="LoginAction" method="showSysMenu">
+           <result name="success">index.jsp</result>
+        </action>
+		<action name="getMenuTree" class="LoginAction" method="getMenuTree">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="saveSysMenu" class="LoginAction" method="saveSysMenu">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="deleteSysMenu" class="LoginAction" method="deleteSysMenu">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+        <action name="queryAdminInfos" class="LoginAction" method="queryAdminInfos">
+           <result name="success">userManage.jsp</result>
+        </action>
+		<action name="findOneAdminInfo" class="LoginAction" method="findOneAdminInfo">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="addAdminInfo" class="LoginAction" method="addAdminInfo">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="deleteAdminInfo" class="LoginAction" method="deleteAdminInfo">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="modAdminPwd" class="LoginAction" method="modAdminPwd">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="resetAdminPwd" class="LoginAction" method="resetAdminPwd">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+    </package>
+	<package name="odm" namespace="/odm" extends="abstract_struts">
+        <result-types>
+        	 <!-- 此配置用于解决struts2自带的文件下载功能，在取消下载时会报错的问题 -->
+             <result-type name="streamx" class="cc.fozone.struts2.StreamResultX"/>
+        </result-types>
+	   	<interceptors>
+			<interceptor name="checkAdminLogin" class="logic.BgInterceptor"/>
+			<interceptor-stack name="adminDefault">
+				<interceptor-ref name="defaultStack" /> 
+				<interceptor-ref name="checkAdminLogin"/>  
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="adminDefault" />
+		<global-results>
+			<result name="login">/logout.jsp</result>
+		</global-results>
+        <action name="queryOdRecords" class="ODManageAction" method="queryOdRecords">
+           <result name="success">odManage.jsp</result>
+        </action>
+		<action name="saveOdRecord" class="ODManageAction" method="saveOdRecord">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="viewOdRecord" class="ODManageAction" method="viewOdRecord">
+           <result name="success">addOdRecord.jsp</result>
+        </action>
+		<action name="editOdRecord" class="ODManageAction" method="editOdRecord">
+           <result name="success">addOdRecord.jsp</result>
+        </action>
+		<action name="deleteOdRecord" class="ODManageAction" method="deleteOdRecord">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="deleteOdAtt" class="ODManageAction" method="deleteOdAtt">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+       <action name="ajaxUpload" class="ODManageAction" method="impOdRecords">
+			<result name="success" type="json">
+				<param name="root">message</param>.
+				<param name="contentType">text/html;charset=UTF-8</param>
+			</result>
+       </action>
+       <action name="ajaxUploadOdAtt" class="ODManageAction" method="ajaxUploadOdAtt">
+			<result name="success" type="json">
+				<param name="root">message</param>
+				<param name="contentType">text/html;charset=UTF-8</param>
+			</result>
+       </action>
+        <action name="downloadTemplet" class="ODManageAction" method="downloadTemplet">
+            <result name="success" type="stream">
+		    <param name="inputName">downloadStream</param>
+		    <param name="contentDisposition">attachment;filename="${fileName}"</param>
+		    <param name="bufferSize">2048</param>
+			</result>
+        </action>
+        <action name="download" class="ODManageAction" method="downloadFile">
+            <result name="success" type="streamx">
+		    <param name="inputName">downloadStream</param>
+		    <param name="contentDisposition">attachment;filename="${fileName}"</param>
+		    <param name="bufferSize">2048</param>
+			</result>
+        </action>
+        <action name="zipDownload" class="ODManageAction" method="zipDownload">
+            <result name="success" type="stream">
+		    <param name="inputName">downloadStream</param>
+		    <param name="contentDisposition">attachment;filename="${fileName}"</param>
+		    <param name="bufferSize">2048</param>
+			</result>
+        </action>
+    </package>
+	<package name="duty" namespace="/duty" extends="abstract_struts">
+        <result-types>
+        	 <!-- 此配置用于解决struts2自带的文件下载功能，在取消下载时会报错的问题 -->
+             <result-type name="streamx" class="cc.fozone.struts2.StreamResultX"/>
+        </result-types>
+	   	<interceptors>
+			<interceptor name="checkAdminLogin" class="logic.BgInterceptor"/>
+			<interceptor-stack name="adminDefault">
+				<interceptor-ref name="defaultStack" /> 
+				<interceptor-ref name="checkAdminLogin"/>  
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="adminDefault" />
+		<global-results>
+			<result name="login">/logout.jsp</result>
+		</global-results>
+        <action name="queryDutyInfos" class="DutyManageAction" method="queryDutyInfos">
+           <result name="success">dutyManage.jsp</result>
+        </action>
+		<action name="findOneDutyInfo" class="DutyManageAction" method="findOneDutyInfo">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="addDutyInfo" class="DutyManageAction" method="addDutyInfo">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="deleteDutyInfo" class="DutyManageAction" method="deleteDutyInfo">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="modifyDutyInfo" class="DutyManageAction" method="modifyDutyInfo">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+        <action name="findAllDutyPersons" class="DutyManageAction" method="findAllDutyPersons">
+           <result name="success">personManage.jsp</result>
+        </action>
+		<action name="findOneDutyPerson" class="DutyManageAction" method="findOneDutyPerson">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="addDutyPerson" class="DutyManageAction" method="addDutyPerson">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+		<action name="deleteDutyPerson" class="DutyManageAction" method="deleteDutyPerson">
+           <result type="json"><param name="root">message</param></result>
+        </action>
+    </package>
+</struts>

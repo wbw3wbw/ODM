@@ -1,0 +1,12 @@
+/META-INF
+/action
+/applicationContext-quartz.xml
+/applicationContext.xml
+/dao
+/dtree
+/log4j.properties
+/logic
+/model
+/sendMsg
+/service
+/struts.xml
